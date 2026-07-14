@@ -1,7 +1,6 @@
 const { body } = require("express-validator");
 
 const createEmployee = [
-  body("employee_code").trim().notEmpty().withMessage("Employee code is required."),
   body("first_name").trim().notEmpty().withMessage("First name is required."),
   body("last_name").trim().notEmpty().withMessage("Last name is required."),
   body("gender").trim().notEmpty().withMessage("Gender is required."),

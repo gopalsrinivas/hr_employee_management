@@ -40,7 +40,6 @@ test("employee creation and search work", async () => {
     .post("/api/v1/employees")
     .set("Authorization", `Bearer ${token}`)
     .send({
-      employee_code: `TST${suffix}`,
       first_name: "Test",
       last_name: "Employee",
       gender: "Other",
@@ -56,16 +55,17 @@ test("employee creation and search work", async () => {
 
   assert.equal(response.statusCode, 201);
   employeeId = response.body.data.id;
+  assert.match(response.body.data.employee_code, /^EMP\d+$/);
 
   const searchResponse = await request(app)
-    .get(`/api/v1/employees?search=TST${suffix}`)
+    .get(`/api/v1/employees?search=${response.body.data.employee_code}`)
     .set("Authorization", `Bearer ${token}`);
 
   assert.equal(searchResponse.statusCode, 200);
   assert.ok(searchResponse.body.data.length >= 1);
 });
 
-test("duplicate employee code is rejected", async () => {
+test("manual employee code is ignored and generated code remains unique", async () => {
   const existing = await request(app)
     .get(`/api/v1/employees/${employeeId}`)
     .set("Authorization", `Bearer ${token}`);
@@ -85,7 +85,9 @@ test("duplicate employee code is rejected", async () => {
       salary: 50000
     });
 
-  assert.equal(response.statusCode, 409);
+  assert.equal(response.statusCode, 201);
+  assert.match(response.body.data.employee_code, /^EMP\d+$/);
+  assert.notEqual(response.body.data.employee_code, existing.body.data.employee_code);
 });
 
 test("attendance duplicate check-in is rejected", async () => {

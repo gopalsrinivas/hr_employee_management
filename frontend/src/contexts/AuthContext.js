@@ -23,6 +23,16 @@ export function AuthProvider({ children }) {
     setIsLoading(false);
   }, []);
 
+  useEffect(() => {
+    const handleAutoLogout = () => {
+      setUser(null);
+      setToken(null);
+    };
+
+    window.addEventListener("auth:logout", handleAutoLogout);
+    return () => window.removeEventListener("auth:logout", handleAutoLogout);
+  }, []);
+
   const login = async (credentials) => {
     const response = await apiClient.post("/auth/login", credentials);
     const nextSession = response.data.data;
@@ -46,6 +56,17 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const refreshProfile = async () => {
+    const response = await apiClient.get("/auth/profile");
+    const nextUser = response.data.data;
+    const session = getAuthSession();
+    const nextSession = { ...session, user: nextUser };
+
+    setUser(nextUser);
+    saveAuthSession(nextSession);
+    return nextUser;
+  };
+
   const value = useMemo(
     () => ({
       user,
@@ -53,7 +74,8 @@ export function AuthProvider({ children }) {
       isLoading,
       isAuthenticated: Boolean(token),
       login,
-      logout
+      logout,
+      refreshProfile
     }),
     [isLoading, token, user]
   );

@@ -23,6 +23,7 @@ const routeGroups = [
     routes: [
       ["GET", "/"],
       ["POST", "/"],
+      ["GET", "/next-code"],
       ["GET", "/:id"],
       ["PUT", "/:id"],
       ["DELETE", "/:id"]

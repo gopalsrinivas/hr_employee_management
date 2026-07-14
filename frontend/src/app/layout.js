@@ -1,20 +1,24 @@
-import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "../contexts/AuthContext";
+import Providers from "./providers";
 import "./globals.css";
 
 export const metadata = {
-  title: "HR Employee Management",
-  description: "Part 1 authentication setup"
+  title: {
+    default: "HR Employee Management System",
+    template: "%s | HRMS"
+  },
+  description: "Enterprise HR employee management dashboard",
+  icons: {
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <AuthProvider>
+        <Providers>
           {children}
-          <Toaster position="top-right" />
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

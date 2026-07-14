@@ -12,6 +12,7 @@ const router = express.Router();
 router.use(auth);
 router.get("/", paginationQuery, validate, controller.list);
 router.post("/", authorize(ROLES.ADMIN, ROLES.HR), createEmployee, validate, controller.create);
+router.get("/next-code", authorize(ROLES.ADMIN, ROLES.HR), controller.nextCode);
 router.get("/:id", idParam(), validate, controller.getById);
 router.put("/:id", authorize(ROLES.ADMIN, ROLES.HR), idParam(), updateEmployee, validate, controller.update);
 router.delete("/:id", authorize(ROLES.ADMIN, ROLES.HR), idParam(), validate, controller.remove);

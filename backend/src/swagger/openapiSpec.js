@@ -321,10 +321,9 @@ const spec = {
       },
       EmployeeCreate: {
         type: "object",
-        required: ["employee_code", "first_name", "last_name", "gender", "email", "joining_date", "department_id", "designation_id"],
+        required: ["first_name", "last_name", "gender", "email", "joining_date", "department_id", "designation_id"],
         properties: {
           user_id: { type: "integer", nullable: true, example: 1 },
-          employee_code: { type: "string", example: "EMP100" },
           first_name: { type: "string", example: "Asha" },
           last_name: { type: "string", example: "Nair" },
           gender: { type: "string", example: "Female" },
@@ -613,7 +612,6 @@ Object.assign(
     createSchema: "EmployeeCreate",
     updateSchema: "EmployeeUpdate",
     createExample: {
-      employee_code: "EMP100",
       first_name: "Asha",
       last_name: "Nair",
       gender: "Female",
@@ -632,6 +630,17 @@ Object.assign(
     ]
   })
 );
+
+Object.assign(spec.paths, {
+  "/employees/next-code": {
+    get: operation({
+      tag: "Employees",
+      summary: "Generate next employee code",
+      description: "Returns the next available employee code based on existing valid EMP numeric codes. Does not update existing employee records.",
+      successDescription: "Next employee code generated successfully"
+    })
+  }
+});
 
 Object.assign(spec.paths, {
   "/attendance": {
