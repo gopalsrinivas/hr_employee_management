@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+src/logs/*.log
+src/uploads/*
+!src/uploads/.gitkeep
+!src/logs/.gitkeep
