@@ -15,6 +15,18 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         type: DataTypes.STRING(255),
         allowNull: true
+      },
+      created_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      updated_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      deleted_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true
       }
     },
     {
@@ -29,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "role_id",
       as: "users"
     });
+    Role.belongsTo(models.User, { foreignKey: "created_by", as: "creator" });
+    Role.belongsTo(models.User, { foreignKey: "updated_by", as: "updater" });
+    Role.belongsTo(models.User, { foreignKey: "deleted_by", as: "deleter" });
   };
 
   return Role;

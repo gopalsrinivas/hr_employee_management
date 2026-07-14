@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
       updated_by: {
         type: DataTypes.INTEGER,
         allowNull: true
+      },
+      deleted_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true
       }
     },
     {
@@ -59,6 +63,14 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.belongsTo(models.Role, {
       foreignKey: "role_id"
+    });
+    User.hasOne(models.Employee, {
+      foreignKey: "user_id",
+      as: "employeeProfile"
+    });
+    User.hasMany(models.AppLog, {
+      foreignKey: "user_id",
+      as: "appLogs"
     });
   };
 

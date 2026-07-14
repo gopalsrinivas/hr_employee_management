@@ -19,17 +19,21 @@ module.exports = {
     const password = await bcrypt.hash("Admin@12345", 10);
     const now = new Date();
 
-    await queryInterface.bulkInsert("users", [
-      {
-        name: "System Admin",
-        email: "admin@example.com",
-        password,
-        role_id: adminRole.id,
-        is_active: true,
-        created_at: now,
-        updated_at: now
-      }
-    ]);
+    await queryInterface.bulkInsert(
+      "users",
+      [
+        {
+          name: "System Admin",
+          email: "admin@example.com",
+          password,
+          role_id: adminRole.id,
+          is_active: true,
+          created_at: now,
+          updated_at: now
+        }
+      ],
+      { ignoreDuplicates: true }
+    );
   },
 
   async down(queryInterface) {
