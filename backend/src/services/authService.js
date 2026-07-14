@@ -27,18 +27,18 @@ const login = async ({ email, password }) => {
   });
 
   if (!user) {
-    logger.warn("Authentication failure", { email });
+    logger.warn("Authentication failure");
     throw new AuthenticationError("Invalid email or password");
   }
 
   const passwordMatches = await comparePassword(password, user.password);
 
   if (!passwordMatches) {
-    logger.warn("Authentication failure", { email });
+    logger.warn("Authentication failure", { userId: user.id });
     throw new AuthenticationError("Invalid email or password");
   }
 
-  logger.info("User login", { userId: user.id, email: user.email });
+  logger.info("User login", { userId: user.id });
 
   const token = generateToken(user);
 
@@ -50,7 +50,7 @@ const login = async ({ email, password }) => {
 };
 
 const logout = async (user) => {
-  logger.info("User logout", { userId: user.id, email: user.email });
+  logger.info("User logout", { userId: user.id });
   return true;
 };
 

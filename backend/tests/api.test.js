@@ -1,14 +1,27 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 const request = require("supertest");
 const app = require("../src/app");
-const { sequelize } = require("../src/models");
+const {
+  Attendance,
+  Employee,
+  EmployeeDocument,
+  EmployeeExit,
+  LeaveRequest,
+  Payroll,
+  sequelize
+} = require("../src/models");
 
 let token;
 let employeeId;
 let leaveRequestId;
 let payrollId;
 let exitId;
+let documentId;
+let uploadedDocumentPath;
+const employeeIds = [];
 
 test("successful login returns an access token", async () => {
   const response = await request(app)
@@ -55,6 +68,7 @@ test("employee creation and search work", async () => {
 
   assert.equal(response.statusCode, 201);
   employeeId = response.body.data.id;
+  employeeIds.push(employeeId);
   assert.match(response.body.data.employee_code, /^EMP\d+$/);
 
   const searchResponse = await request(app)
@@ -86,6 +100,7 @@ test("manual employee code is ignored and generated code remains unique", async 
     });
 
   assert.equal(response.statusCode, 201);
+  employeeIds.push(response.body.data.id);
   assert.match(response.body.data.employee_code, /^EMP\d+$/);
   assert.notEqual(response.body.data.employee_code, existing.body.data.employee_code);
 });
@@ -153,6 +168,25 @@ test("payroll calculation works", async () => {
   payrollId = response.body.data.id;
 });
 
+test("employee document upload works", async () => {
+  const response = await request(app)
+    .post("/api/v1/employee-documents")
+    .set("Authorization", `Bearer ${token}`)
+    .field("employee_id", String(employeeId))
+    .field("document_type", "Resume")
+    .field("document_number", `TEST-${Date.now()}`)
+    .attach("file", Buffer.from("%PDF-1.4\n% test document\n"), {
+      filename: "test-resume.pdf",
+      contentType: "application/pdf"
+    });
+
+  assert.equal(response.statusCode, 201);
+  assert.equal(response.body.data.document_type, "Resume");
+  assert.ok(response.body.data.file_path);
+  documentId = response.body.data.id;
+  uploadedDocumentPath = response.body.data.file_path;
+});
+
 test("employee exit completion works after approvals and clearance", async () => {
   const create = await request(app)
     .post("/api/v1/employee-exits")
@@ -186,5 +220,33 @@ test("employee exit completion works after approvals and clearance", async () =>
 });
 
 test.after(async () => {
+  const transaction = await sequelize.transaction();
+  try {
+    if (documentId) {
+      await EmployeeDocument.destroy({ where: { id: documentId }, force: true, transaction });
+    }
+    if (payrollId) {
+      await Payroll.destroy({ where: { id: payrollId }, force: true, transaction });
+    }
+    if (leaveRequestId) {
+      await LeaveRequest.destroy({ where: { id: leaveRequestId }, force: true, transaction });
+    }
+    if (exitId) {
+      await EmployeeExit.destroy({ where: { id: exitId }, force: true, transaction });
+    }
+    if (employeeIds.length) {
+      await Attendance.destroy({ where: { employee_id: employeeIds }, force: true, transaction });
+      await Employee.destroy({ where: { id: employeeIds }, force: true, transaction });
+    }
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  } finally {
+    if (uploadedDocumentPath) {
+      await fs.rm(path.resolve(process.cwd(), uploadedDocumentPath), { force: true });
+    }
+  }
+
   await sequelize.close();
 });

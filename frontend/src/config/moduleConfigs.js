@@ -8,6 +8,7 @@ import {
   FiThumbsUp
 } from "react-icons/fi";
 import { formatCurrency, formatDate, getRecordName } from "../utils/formatters";
+import { getUploadUrl } from "../utils/fileUrls";
 
 const text = (name, label, required = false, extra = {}) => ({ name, label, type: "text", required, ...extra });
 const number = (name, label, required = false) => ({ name, label, type: "number", required });
@@ -190,7 +191,13 @@ export const moduleConfigs = {
     ],
     fields: [
       lookup("employee_id", "Employee", "employees"),
-      { name: "leave_type", label: "Leave type", type: "select", required: true, options: ["Casual", "Sick", "Earned", "Unpaid"] },
+      {
+        name: "leave_type",
+        label: "Leave type",
+        type: "select",
+        required: true,
+        options: ["Casual Leave", "Sick Leave", "Earned Leave", "Loss Of Pay", "Work From Home"]
+      },
       date("from_date", "From date", true),
       date("to_date", "To date", true),
       textarea("reason", "Reason")
@@ -244,7 +251,19 @@ export const moduleConfigs = {
       { key: "employee_id", label: "Employee", sortable: true, render: (row) => employeeLabel(row.employee) || row.employee_id },
       { key: "document_type", label: "Type", sortable: true },
       { key: "document_number", label: "Number" },
-      { key: "original_name", label: "File" },
+      {
+        key: "original_name",
+        label: "File",
+        render: (row) => {
+          const href = getUploadUrl(row.file_path);
+          if (!href) return row.original_name || "-";
+          return (
+            <a className="font-semibold text-teal hover:underline" href={href} target="_blank" rel="noreferrer">
+              {row.original_name || "Preview / download"}
+            </a>
+          );
+        }
+      },
       { key: "uploaded_at", label: "Uploaded", sortable: true, render: (row) => formatDate(row.uploaded_at) }
     ],
     fields: [lookup("employee_id", "Employee", "employees"), text("document_type", "Document type", true), text("document_number", "Document number"), { name: "file", label: "File", type: "file", required: true }],

@@ -12,12 +12,14 @@ const env = {
   uploadPath: process.env.UPLOAD_PATH || "src/uploads",
   maxFileSize: Number(process.env.MAX_FILE_SIZE || 5242880),
   logLevel: process.env.LOG_LEVEL || "info",
+  dbConnectRetries: Number(process.env.DB_CONNECT_RETRIES || 10),
+  dbConnectRetryDelayMs: Number(process.env.DB_CONNECT_RETRY_DELAY_MS || 3000),
   database: {
     host: process.env.DB_HOST || "localhost",
     port: Number(process.env.DB_PORT || 5432),
     name: process.env.DB_NAME || "hr_employee_management",
     user: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASSWORD || "postgres",
+    password: process.env.DB_PASSWORD || "",
     dialect: "postgres"
   }
 };

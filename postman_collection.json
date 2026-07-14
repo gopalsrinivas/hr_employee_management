@@ -1,0 +1,172 @@
+{
+  "info": {
+    "name": "HR Employee Management API",
+    "description": "Postman collection for the HR Employee Management System /api/v1 API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@12345\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/login",
+        "auth": {
+          "type": "noauth"
+        }
+      }
+    },
+    {
+      "name": "Auth - Profile",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/profile"
+      }
+    },
+    {
+      "name": "Dashboard - Summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/dashboard/summary"
+      }
+    },
+    {
+      "name": "Employees - Next Code",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/employees/next-code"
+      }
+    },
+    {
+      "name": "Employees - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Demo\",\n  \"last_name\": \"Employee\",\n  \"gender\": \"Other\",\n  \"email\": \"demo.employee@example.com\",\n  \"joining_date\": \"2026-07-14\",\n  \"department_id\": 2,\n  \"designation_id\": 1,\n  \"salary\": 50000,\n  \"status\": \"Active\"\n}"
+        },
+        "url": "{{baseUrl}}/employees"
+      }
+    },
+    {
+      "name": "Attendance - Check In",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employee_id\": 1,\n  \"attendance_date\": \"2026-07-14\",\n  \"check_in\": \"09:30:00\"\n}"
+        },
+        "url": "{{baseUrl}}/attendance/check-in"
+      }
+    },
+    {
+      "name": "Leave Requests - Apply",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employee_id\": 1,\n  \"leave_type\": \"Sick Leave\",\n  \"from_date\": \"2026-08-05\",\n  \"to_date\": \"2026-08-06\",\n  \"reason\": \"Medical\"\n}"
+        },
+        "url": "{{baseUrl}}/leave-requests"
+      }
+    },
+    {
+      "name": "Payroll - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employee_id\": 1,\n  \"payroll_month\": \"August\",\n  \"payroll_year\": 2026,\n  \"basic_salary\": 50000,\n  \"hra\": 10000,\n  \"da\": 5000,\n  \"bonus\": 2500,\n  \"pf\": 3000,\n  \"tax\": 2000\n}"
+        },
+        "url": "{{baseUrl}}/payroll"
+      }
+    },
+    {
+      "name": "Employee Documents - Upload",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "employee_id",
+              "value": "1",
+              "type": "text"
+            },
+            {
+              "key": "document_type",
+              "value": "Resume",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/employee-documents"
+      }
+    },
+    {
+      "name": "Reports - Summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/reports/summary"
+      }
+    }
+  ]
+}

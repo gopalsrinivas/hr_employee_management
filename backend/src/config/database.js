@@ -1,8 +1,8 @@
 require("./env");
 
 const baseConfig = {
-  username: process.env.DB_USER || "gopal",
-  password: process.env.DB_PASSWORD || "gopal",
+  username: process.env.DB_USER || "postgres",
+  password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "hr_employee_management",
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT || 5432),
