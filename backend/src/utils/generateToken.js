@@ -5,6 +5,8 @@ const generateToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
+      userId: user.id,
+      employeeId: user.employeeProfile ? user.employeeProfile.id : null,
       email: user.email,
       role: user.Role ? user.Role.name : undefined
     },

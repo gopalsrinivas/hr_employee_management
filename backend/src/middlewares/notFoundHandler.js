@@ -1,7 +1,7 @@
-const { errorResponse } = require("../helpers/apiResponse");
+const { NotFoundError } = require("../utils/appError");
 
-const notFoundHandler = (req, res) => {
-  return errorResponse(res, `Route not found: ${req.method} ${req.originalUrl}`, 404);
+const notFoundHandler = (req, res, next) => {
+  return next(new NotFoundError(`Route not found: ${req.method} ${req.originalUrl}`));
 };
 
 module.exports = notFoundHandler;

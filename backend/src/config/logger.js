@@ -26,6 +26,9 @@ const logger = winston.createLogger({
     }),
     new winston.transports.File({
       filename: path.join(logDirectory, "application.log")
+    }),
+    new winston.transports.File({
+      filename: path.join(logDirectory, "combined.log")
     })
   ]
 });

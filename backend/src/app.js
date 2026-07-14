@@ -1,12 +1,13 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
-const morgan = require("morgan");
 const swaggerUi = require("swagger-ui-express");
 const env = require("./config/env");
-const logger = require("./config/logger");
 const routes = require("./routes");
 const swaggerSpec = require("./swagger");
+const requestContext = require("./middlewares/requestContext");
+const requestLogger = require("./middlewares/requestLogger");
 const notFoundHandler = require("./middlewares/notFoundHandler");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -21,13 +22,9 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  morgan("combined", {
-    stream: {
-      write: (message) => logger.info(message.trim())
-    }
-  })
-);
+app.use(requestContext);
+app.use(requestLogger);
+app.use("/uploads", express.static(path.resolve(process.cwd(), env.uploadPath)));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api", routes);

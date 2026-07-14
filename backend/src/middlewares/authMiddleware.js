@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 const env = require("../config/env");
-const { User, Role } = require("../models");
-const { errorResponse } = require("../helpers/apiResponse");
+const { User, Role, Employee } = require("../models");
+const { AuthenticationError } = require("../utils/appError");
 
 const authMiddleware = async (req, res, next) => {
   const authorizationHeader = req.headers.authorization;
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    return errorResponse(res, "Authentication token is required", 401);
+    return next(new AuthenticationError("Authentication token is required"));
   }
 
   const token = authorizationHeader.split(" ")[1];
@@ -15,20 +15,23 @@ const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, env.jwtSecret);
     const user = await User.findOne({
-      where: { id: decoded.id, is_active: true },
-      include: [{ model: Role, attributes: ["id", "name"] }]
+      where: { id: decoded.userId || decoded.id, is_active: true },
+      include: [
+        { model: Role, attributes: ["id", "name"] },
+        { model: Employee, as: "employeeProfile", attributes: ["id", "employee_code"] }
+      ]
     });
 
     if (!user) {
-      return errorResponse(res, "Authenticated user was not found", 401);
+      return next(new AuthenticationError("Authenticated user was not found"));
     }
 
     req.user = user;
     return next();
   } catch (error) {
-    return errorResponse(res, "Invalid or expired authentication token", 401, [
+    return next(new AuthenticationError("Invalid or expired authentication token", [
       { message: error.message }
-    ]);
+    ]));
   }
 };
 

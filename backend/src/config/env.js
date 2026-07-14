@@ -10,6 +10,7 @@ const env = {
   jwtSecret: process.env.JWT_SECRET || "development_secret_change_me",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
   uploadPath: process.env.UPLOAD_PATH || "src/uploads",
+  maxFileSize: Number(process.env.MAX_FILE_SIZE || 5242880),
   logLevel: process.env.LOG_LEVEL || "info",
   database: {
     host: process.env.DB_HOST || "localhost",

@@ -4,6 +4,7 @@ const successResponse = (res, message, data = null, statusCode = 200, extra = {}
     message,
     data,
     statusCode,
+    requestId: res.req ? res.req.requestId : undefined,
     ...extra
   });
 };
@@ -13,7 +14,8 @@ const errorResponse = (res, message, statusCode = 500, errors = []) => {
     success: false,
     message,
     errors,
-    statusCode
+    statusCode,
+    requestId: res.req ? res.req.requestId : undefined
   });
 };
 

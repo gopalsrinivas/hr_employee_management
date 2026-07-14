@@ -19,7 +19,27 @@ const logout = async (req, res, next) => {
   }
 };
 
+const profile = async (req, res, next) => {
+  try {
+    const result = await authService.getProfile(req.user.id);
+    return successResponse(res, "Profile fetched successfully", result);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const changePassword = async (req, res, next) => {
+  try {
+    await authService.changePassword(req.user, req.body);
+    return successResponse(res, "Password changed successfully");
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   login,
-  logout
+  logout,
+  profile,
+  changePassword
 };
