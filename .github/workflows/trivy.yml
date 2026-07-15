@@ -1,0 +1,95 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "45 3 * * 2"
+
+concurrency:
+  group: trivy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  trivy:
+    name: Scan repository and images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DOCKER_BUILDKIT: 1
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:5000/api/v1
+      TRIVY_SEVERITY: HIGH,CRITICAL
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan repository filesystem
+        id: filesystem_scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: ${{ env.TRIVY_SEVERITY }}
+          ignore-unfixed: true
+          exit-code: 1
+          format: table
+          output: trivy-filesystem.txt
+          skip-dirs: "backend/node_modules,frontend/node_modules,frontend/.next,backend/src/logs"
+
+      - name: Build backend image
+        run: docker build -t hrms-backend-trivy:latest ./backend
+
+      - name: Build frontend image
+        run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL="${NEXT_PUBLIC_API_BASE_URL}" -t hrms-frontend-trivy:latest ./frontend
+
+      - name: Scan backend image
+        id: backend_image_scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: hrms-backend-trivy:latest
+          scanners: vuln,secret,misconfig
+          severity: ${{ env.TRIVY_SEVERITY }}
+          ignore-unfixed: true
+          exit-code: 1
+          format: table
+          output: trivy-backend-image.txt
+
+      - name: Scan frontend image
+        id: frontend_image_scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: hrms-frontend-trivy:latest
+          scanners: vuln,secret,misconfig
+          severity: ${{ env.TRIVY_SEVERITY }}
+          ignore-unfixed: true
+          exit-code: 1
+          format: table
+          output: trivy-frontend-image.txt
+
+      - name: Upload Trivy reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: |
+            trivy-filesystem.txt
+            trivy-backend-image.txt
+            trivy-frontend-image.txt
+          if-no-files-found: ignore
+
+      - name: Enforce Trivy severity policy
+        if: always()
+        run: |
+          if [ "${{ steps.filesystem_scan.outcome }}" = "failure" ] || [ "${{ steps.backend_image_scan.outcome }}" = "failure" ] || [ "${{ steps.frontend_image_scan.outcome }}" = "failure" ]; then
+            echo "Trivy detected HIGH or CRITICAL findings. Review uploaded reports."
+            exit 1
+          fi

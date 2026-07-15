@@ -1,3 +1,11 @@
+<!-- Part 1 – Project Setup
+Part 2 – Database
+Part 3 – Backend
+Part 4 – Frontend
+Part 5 – Final Integration
+Part 6 – DevOps & Deployment -->
+
+
 # MASTER-README.md
 
 # HR Employee Management System

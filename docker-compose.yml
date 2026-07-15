@@ -11,6 +11,8 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hrms_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-hr_employee_management}"]
       interval: 10s
@@ -44,6 +46,8 @@ services:
     volumes:
       - ./backend/src/logs:/app/src/logs
       - ./backend/src/uploads:/app/src/uploads
+    networks:
+      - hrms_network
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:5000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
       interval: 15s
@@ -53,12 +57,16 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:${BACKEND_PORT:-5000}/api/v1}
     container_name: hr-frontend
     depends_on:
       backend:
         condition: service_healthy
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:${BACKEND_PORT:-5000}/api/v1
+    networks:
+      - hrms_network
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     healthcheck:
@@ -69,3 +77,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  hrms_network:
+    driver: bridge
