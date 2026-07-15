@@ -1,8 +1,8 @@
 # HR Employee Management System
 
-A full-stack interview project for managing core HR operations with an Express.js API, PostgreSQL database, Sequelize ORM, and a Next.js dashboard.
+A full-stack project for managing core HR operations with an Express.js API, PostgreSQL database, Sequelize ORM, and a Next.js dashboard.
 
-## Interview Scope
+## Scope
 
 The project covers setup, database design, backend APIs, frontend integration, and final production-readiness checks. It intentionally stays focused on practical HR workflows instead of adding broad enterprise features outside the assignment.
 
@@ -212,7 +212,7 @@ Import `postman_collection.json`. Set collection variables:
 
 ![CI](https://github.com/gopalsrinivas/hr_employee_management/actions/workflows/ci.yml/badge.svg)
 
-Part 6 adds an interview-ready DevOps layer around the working application: GitHub Actions validation, Docker image optimization, dependency automation, security scanning, Kubernetes demo manifests, health checks, deployment commands, and rollback notes.
+Part 6 adds an ready DevOps layer around the working application: GitHub Actions validation, Docker image optimization, dependency automation, security scanning, Kubernetes demo manifests, health checks, deployment commands, and rollback notes.
 
 ## GitHub Actions
 
