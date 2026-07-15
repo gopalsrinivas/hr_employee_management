@@ -31,7 +31,7 @@ jobs:
       - name: Scan repository filesystem
         id: filesystem_scan
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -52,7 +52,7 @@ jobs:
       - name: Scan backend image
         id: backend_image_scan
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: hrms-backend-trivy:latest
           scanners: vuln,secret,misconfig
@@ -65,7 +65,7 @@ jobs:
       - name: Scan frontend image
         id: frontend_image_scan
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: hrms-frontend-trivy:latest
           scanners: vuln,secret,misconfig
